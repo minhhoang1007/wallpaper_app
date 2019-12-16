@@ -1,7 +1,10 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:photos_saver/photos_saver.dart';
+import 'package:wallpaper_app/main.dart';
 
 class ItemPhotoScreen extends StatefulWidget {
   String img;
@@ -12,6 +15,10 @@ class ItemPhotoScreen extends StatefulWidget {
 }
 
 class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
+  //Save
+  Uint8List _imageData;
+  var _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   //Share
   Future<void> _shareImage() async {
     try {
@@ -27,6 +34,33 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
   @override
   void initState() {
     super.initState();
+    loadImage();
+  }
+
+  Future<void> loadImage() async {
+    var imageData = await rootBundle.load(widget.img).then((byteData) {
+      return byteData.buffer.asUint8List();
+    });
+    if (!mounted) return;
+    setState(() {
+      _imageData = imageData;
+    });
+  }
+
+  //Set wallpaper
+  String home = "HomeScreen",
+      lock = "LockScreen",
+      both = "BothScreen",
+      system = "SystemWallpaer";
+  Stream<String> progressString;
+  String res;
+  bool downloading = false;
+  _setwallpaper(String path) {
+    MyApp.platform.invokeMethod("setwallpaper", {"path": path}).then((value) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("OK"),
+      ));
+    }).catchError((onError) {});
   }
 
   @override
@@ -58,7 +92,15 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
                       width: 10,
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () async {
+                        String filePath =
+                            await PhotosSaver.saveFile(fileData: _imageData);
+                        // _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        //     duration: Duration(seconds: 5),
+                        //     content: Text("Created image file at $filePath")));
+
+                        print(filePath);
+                      },
                       child: Container(
                         height: 50,
                         width: 50,
@@ -69,7 +111,14 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () async {
+                        String filePath =
+                            await PhotosSaver.saveFile(fileData: _imageData);
+                        // _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        //     duration: Duration(seconds: 5),
+                        //     content: Text("Created image file at $filePath")));
+                        _setwallpaper(filePath);
+                      },
                       child: Container(
                         height: 50,
                         width: 50,

@@ -1,6 +1,8 @@
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:wallpaper_app/screens/widget/CustomDialog.dart';
+import 'package:wallpaper_app/screens/widget/ItemPhoto.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 
 const String testDevice = 'MobileId';
 
@@ -64,8 +66,78 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
     "assets/wallpapers/anime_wallpaper_49.jpg",
   ];
 
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    testDevices: testDevice != null ? <String>[testDevice] : null,
+    nonPersonalizedAds: true,
+    keywords: <String>['Game', 'Mario'],
+  );
+  BannerAd _bannerAd;
+  InterstitialAd _interstitialAd;
+  bool abc = false;
+  BannerAd createBannerAd() {
+    return BannerAd(
+        adUnitId: BannerAd.testAdUnitId,
+        //Change BannerAd adUnitId with Admob ID
+        size: AdSize.banner,
+        targetingInfo: targetingInfo,
+        listener: (MobileAdEvent event) {
+          print("BannerAd $event");
+        });
+  }
+
+  void getAd(item) async {
+    _interstitialAd = InterstitialAd(
+      adUnitId: InterstitialAd.testAdUnitId,
+      listener: (MobileAdEvent event) {
+        if (event == MobileAdEvent.closed) {
+          _interstitialAd.load();
+        }
+        handEvent(event, item);
+      },
+    );
+    _interstitialAd.load();
+  }
+
+  void handEvent(MobileAdEvent event, item) {
+    switch (event) {
+      case MobileAdEvent.loaded:
+        //if (!c) {
+        _interstitialAd.show();
+        //c = true;
+        //}
+        break;
+      case MobileAdEvent.opened:
+        break;
+      case MobileAdEvent.closed:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemPhotoScreen(
+              img: item,
+            ),
+          ),
+        );
+        break;
+      case MobileAdEvent.failedToLoad:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemPhotoScreen(
+              img: item,
+            ),
+          ),
+        );
+        break;
+      default:
+    }
+  }
+
   @override
   void initState() {
+    FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
+    // _bannerAd = createBannerAd()
+    //   ..load()
+    //   ..show();
     super.initState();
   }
 
@@ -163,7 +235,17 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
                   ),
                   itemBuilder: (context, index) {
                     return GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        getAd(items[index]);
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => ItemPhotoScreen(
+                        //       img: items[index],
+                        //     ),
+                        //   ),
+                        // );
+                      },
                       child: Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
