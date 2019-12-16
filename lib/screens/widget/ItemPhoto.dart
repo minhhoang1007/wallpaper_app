@@ -36,7 +36,7 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
     super.initState();
     loadImage();
   }
-
+  //Save
   Future<void> loadImage() async {
     var imageData = await rootBundle.load(widget.img).then((byteData) {
       return byteData.buffer.asUint8List();
@@ -48,13 +48,6 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
   }
 
   //Set wallpaper
-  String home = "HomeScreen",
-      lock = "LockScreen",
-      both = "BothScreen",
-      system = "SystemWallpaer";
-  Stream<String> progressString;
-  String res;
-  bool downloading = false;
   _setwallpaper(String path) {
     MyApp.platform.invokeMethod("setwallpaper", {"path": path}).then((value) {
       Scaffold.of(context).showSnackBar(SnackBar(

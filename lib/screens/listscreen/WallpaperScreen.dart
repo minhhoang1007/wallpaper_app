@@ -74,6 +74,7 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
   BannerAd _bannerAd;
   InterstitialAd _interstitialAd;
   bool abc = false;
+  bool isLoad = false;
   BannerAd createBannerAd() {
     return BannerAd(
         adUnitId: BannerAd.testAdUnitId,
@@ -86,6 +87,9 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
   }
 
   void getAd(item) async {
+    setState(() {
+      isLoad = true;
+    });
     _interstitialAd = InterstitialAd(
       adUnitId: InterstitialAd.testAdUnitId,
       listener: (MobileAdEvent event) {
@@ -109,6 +113,7 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
       case MobileAdEvent.opened:
         break;
       case MobileAdEvent.closed:
+        isLoad = false;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -119,6 +124,8 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
         );
         break;
       case MobileAdEvent.failedToLoad:
+        isLoad = false;
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -265,6 +272,19 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
               ),
             ],
           ),
+          isLoad
+              ? Positioned(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 1,
+                    width: double.infinity,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                )
+              : Container(
+                  height: 0,
+                )
         ],
       ),
     );
