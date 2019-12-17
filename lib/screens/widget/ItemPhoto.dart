@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:photos_saver/photos_saver.dart';
 import 'package:wallpaper_app/main.dart';
 
@@ -36,6 +37,7 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
     super.initState();
     loadImage();
   }
+
   //Save
   Future<void> loadImage() async {
     var imageData = await rootBundle.load(widget.img).then((byteData) {
@@ -93,6 +95,14 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
                         //     content: Text("Created image file at $filePath")));
 
                         print(filePath);
+                        Fluttertoast.showToast(
+                            msg: "Saved Image",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIos: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
                       },
                       child: Container(
                         height: 50,

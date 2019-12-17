@@ -1,7 +1,10 @@
 import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:wallpaper_app/screens/widget/CustomDialog.dart';
 import 'package:wallpaper_app/screens/widget/ItemPhoto.dart';
+
+const String testDevice = 'MobileId';
 
 class GirlsScreen extends StatefulWidget {
   GirlsScreen({Key key}) : super(key: key);
@@ -41,6 +44,92 @@ class _GirlsScreenState extends State<GirlsScreen> {
     "assets/girls/girl27.jpg",
     "assets/girls/girl28.jpg",
   ];
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    testDevices: testDevice != null ? <String>[testDevice] : null,
+    nonPersonalizedAds: true,
+    keywords: <String>['Game', 'Mario'],
+  );
+  BannerAd _bannerAd;
+  InterstitialAd _interstitialAd;
+  bool abc = false;
+  bool isLoad = false;
+  BannerAd createBannerAd() {
+    return BannerAd(
+        adUnitId: BannerAd.testAdUnitId,
+        //Change BannerAd adUnitId with Admob ID
+        size: AdSize.banner,
+        targetingInfo: targetingInfo,
+        listener: (MobileAdEvent event) {
+          print("BannerAd $event");
+        });
+  }
+
+  void getAd(item) async {
+    setState(() {
+      isLoad = true;
+    });
+    _interstitialAd = InterstitialAd(
+      adUnitId: InterstitialAd.testAdUnitId,
+      listener: (MobileAdEvent event) {
+        if (event == MobileAdEvent.closed) {
+          _interstitialAd.load();
+        }
+        handEvent(event, item);
+      },
+    );
+    _interstitialAd.load();
+  }
+
+  void handEvent(MobileAdEvent event, item) {
+    switch (event) {
+      case MobileAdEvent.loaded:
+        //if (!c) {
+        _interstitialAd.show();
+        //c = true;
+        //}
+        break;
+      case MobileAdEvent.opened:
+        break;
+      case MobileAdEvent.closed:
+        isLoad = false;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemPhotoScreen(
+              img: item,
+            ),
+          ),
+        );
+        break;
+      case MobileAdEvent.failedToLoad:
+        isLoad = false;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemPhotoScreen(
+              img: item,
+            ),
+          ),
+        );
+        break;
+      default:
+    }
+  }
+
+  @override
+  void initState() {
+    FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
+    // _bannerAd = createBannerAd()
+    //   ..load()
+    //   ..show();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,14 +219,15 @@ class _GirlsScreenState extends State<GirlsScreen> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ItemPhotoScreen(
-                              img: items[index],
-                            ),
-                          ),
-                        );
+                        getAd(items[index]);
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => ItemPhotoScreen(
+                        //       img: items[index],
+                        //     ),
+                        //   ),
+                        // );
                       },
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.3,
@@ -159,6 +249,19 @@ class _GirlsScreenState extends State<GirlsScreen> {
               ),
             ],
           ),
+          isLoad
+              ? Positioned(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 1,
+                    width: double.infinity,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                )
+              : Container(
+                  height: 0,
+                )
         ],
       ),
     );
