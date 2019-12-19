@@ -1,6 +1,7 @@
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:wallpaper_app/constants/ApiConstants.dart';
 import 'package:wallpaper_app/screens/widget/CustomDialog.dart';
 import 'package:wallpaper_app/screens/widget/ItemPhoto.dart';
 
@@ -54,7 +55,7 @@ class _LoverScreenState extends State<LoverScreen> {
   bool isLoad = false;
   BannerAd createBannerAd() {
     return BannerAd(
-        adUnitId: BannerAd.testAdUnitId,
+        adUnitId: ADMOB_BANNER_ID,
         //Change BannerAd adUnitId with Admob ID
         size: AdSize.banner,
         targetingInfo: targetingInfo,
@@ -68,7 +69,7 @@ class _LoverScreenState extends State<LoverScreen> {
       isLoad = true;
     });
     _interstitialAd = InterstitialAd(
-      adUnitId: InterstitialAd.testAdUnitId,
+      adUnitId: ADMOB_INTERSTITIAL_ID,
       listener: (MobileAdEvent event) {
         if (event == MobileAdEvent.closed) {
           _interstitialAd.load();
@@ -118,7 +119,7 @@ class _LoverScreenState extends State<LoverScreen> {
 
   @override
   void initState() {
-    FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
+    FirebaseAdMob.instance.initialize(appId: ADMOB_APP_ID);
     // _bannerAd = createBannerAd()
     //   ..load()
     //   ..show();
@@ -159,11 +160,8 @@ class _LoverScreenState extends State<LoverScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Padding(
-                          padding: EdgeInsets.only(
-                              left: MediaQuery.of(context).size.width * 0.03),
-                          child: Text('Anime Lovers Online',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20)),
+                          padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.03),
+                          child: Text('Anime Lovers Online', style: TextStyle(color: Colors.white, fontSize: 20)),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -171,8 +169,8 @@ class _LoverScreenState extends State<LoverScreen> {
                             GestureDetector(
                               onTap: () {
                                 Share.text(
-                                    'my text title',
-                                    'This is my text to share with other applications.',
+                                    'Anime Wallpaper - Wallpaper Master',
+                                    'https://play.google.com/store/apps/details?id=com.anime.master.wallpapers',
                                     'text/plain');
                               },
                               child: Container(
@@ -189,10 +187,7 @@ class _LoverScreenState extends State<LoverScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        CustomDialog());
+                                showDialog(context: context, builder: (BuildContext context) => CustomDialog());
                               },
                               child: Container(
                                 height: 40,
@@ -236,8 +231,7 @@ class _LoverScreenState extends State<LoverScreen> {
                           child: Container(
                             padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8.0)),
+                              borderRadius: BorderRadius.all(Radius.circular(8.0)),
                             ),
                             child: ClipRRect(
                               borderRadius: new BorderRadius.circular(8.0),
