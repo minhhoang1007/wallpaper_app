@@ -24,9 +24,7 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
   Future<void> _shareImage() async {
     try {
       final ByteData bytes = await rootBundle.load(widget.img);
-      await Share.file(
-          'esys image', 'esys.png', bytes.buffer.asUint8List(), 'image/png',
-          text: 'My optional text.');
+      await Share.file('esys image', 'esys.png', bytes.buffer.asUint8List(), 'image/png', text: 'My optional text.');
     } catch (e) {
       print('error: $e');
     }
@@ -61,6 +59,7 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      top: false,
       child: Stack(
         children: <Widget>[
           Container(
@@ -76,8 +75,9 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
             child: Align(
               alignment: FractionalOffset.bottomCenter,
               child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: Colors.black54,
                 ),
                 height: MediaQuery.of(context).size.height * 0.08,
                 child: Row(
@@ -88,8 +88,7 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        String filePath =
-                            await PhotosSaver.saveFile(fileData: _imageData);
+                        String filePath = await PhotosSaver.saveFile(fileData: _imageData);
                         // _scaffoldKey.currentState.showSnackBar(SnackBar(
                         //     duration: Duration(seconds: 5),
                         //     content: Text("Created image file at $filePath")));
@@ -109,14 +108,13 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
                         width: 50,
                         child: Image.asset(
                           "assets/icons/download.png",
-                          fit: BoxFit.fill,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
                     GestureDetector(
                       onTap: () async {
-                        String filePath =
-                            await PhotosSaver.saveFile(fileData: _imageData);
+                        String filePath = await PhotosSaver.saveFile(fileData: _imageData);
                         // _scaffoldKey.currentState.showSnackBar(SnackBar(
                         //     duration: Duration(seconds: 5),
                         //     content: Text("Created image file at $filePath")));
@@ -127,7 +125,7 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
                         width: 50,
                         child: Image.asset(
                           "assets/icons/wallpaper.png",
-                          fit: BoxFit.fill,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
@@ -140,7 +138,7 @@ class _ItemPhotoScreenState extends State<ItemPhotoScreen> {
                         width: 50,
                         child: Image.asset(
                           "assets/icons/share.png",
-                          fit: BoxFit.fill,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
